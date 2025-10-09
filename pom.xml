@@ -14,7 +14,7 @@
   <version>2.0-SNAPSHOT</version>
 
   <properties>
-    <web-utils.version>3.1-SNAPSHOT</web-utils.version>
+    <web-utils.version>3.2-SNAPSHOT</web-utils.version>
     <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
     <hikari.version>2.4.2</hikari.version>
     <postgres-driver.version>42.2.28</postgres-driver.version>
