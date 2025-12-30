@@ -1,0 +1,34 @@
+{
+  "name": "fr.wseduc~mod-postgresql",
+  "waitDeploy" : true,
+  "worker": false,
+  "config": {
+    "address": "sql.persistor",
+    "instances": {{ modPostgresInstances | default(5) }},
+    "workerPoolSize": {{ modPostgresWorkerPoolSize | default(5) }},
+    "workerPoolName": "{{ modPostgresWorkerPoolName | default('pg-pool') }}",
+    "url": "{{ modPostgresUrl }}",
+    {% if modPostgresSlaveUrl is defined %}
+      "url-slave": "{{ modPostgresSlaveUrl }}",
+    {% endif %}
+    "username": "{{ sqlUsername | default('apps') }}",
+    "password": "{{ credentials_postgresql_apps }}",
+    "pool_size": {{ modPostgresPoolSize | default(2) }}
+  }
+}
+{% if (ha is defined and not(ha)) or (inventory_hostname_short is defined and inventory_hostname_short == 'jobs') %}
+  ,{
+    "name": "fr.wseduc~mod-postgresql",
+    "waitDeploy" : true,
+    "worker": true,
+    "multi-threaded": false,
+    "config": {
+      "instances": 1,
+      "address": "sql.persistor.admin",
+      "url": "{{ modPostgresUrl }}",
+      "username": "{{ sqlAdminUsername | default('admin') }}",
+      "password": "{{ credentials_postgresql_ent }}",
+      "pool_size": 2
+    }
+  }
+{% endif %}
