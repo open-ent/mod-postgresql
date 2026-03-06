@@ -1,7 +1,7 @@
 {
   "name": "fr.wseduc~mod-postgresql",
   "waitDeploy" : true,
-  "worker": false,
+  "worker": true,
   "config": {
     "address": "sql.persistor",
     "instances": {{ modPostgresInstances | default(5) }},
