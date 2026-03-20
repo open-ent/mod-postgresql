@@ -82,7 +82,7 @@ public class SqlPersistor extends BusModBase implements Handler<Message<JsonObje
 			dsSlave = new HikariDataSource(confSlave);
 		}
 
-		vertx.eventBus().consumer(config.getString("address", "sql.persistor"), this);
+		vertx.eventBus().localConsumer(config.getString("address", "sql.persistor"), this);
 		startPromise.tryComplete();
 	}
 
