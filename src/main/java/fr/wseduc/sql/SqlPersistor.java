@@ -328,6 +328,10 @@ public class SqlPersistor extends BusModBase implements Handler<Message<JsonObje
 				Object v = values.getValue(i);
 				if (v instanceof Integer) {
 					statement.setInt(i + 1, (Integer) v);
+				} else if (v instanceof Boolean) {
+					statement.setBoolean(i + 1, (Boolean) v);
+				} else if (v instanceof Long) {
+					statement.setLong(i + 1, (Long) v);
 				} else {
 					if (v != null) {
 						v = v.toString();
