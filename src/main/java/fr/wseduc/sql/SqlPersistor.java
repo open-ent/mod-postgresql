@@ -333,10 +333,13 @@ public class SqlPersistor extends BusModBase implements Handler<Message<JsonObje
 				} else if (v instanceof Long) {
 					statement.setLong(i + 1, (Long) v);
 				} else {
+					// Types.OTHER → oid=0 (untyped) : PostgreSQL applique ses propres règles
+					// d'inférence, permettant de binder des String vers time, timestamp, etc.
 					if (v != null) {
-						v = v.toString();
+						statement.setObject(i + 1, v.toString(), java.sql.Types.OTHER);
+					} else {
+						statement.setNull(i + 1, java.sql.Types.OTHER);
 					}
-					statement.setObject(i + 1, v);
 				}
 
 			}
