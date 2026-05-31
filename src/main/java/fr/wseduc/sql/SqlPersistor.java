@@ -56,6 +56,7 @@ public class SqlPersistor extends BusModBase implements Handler<Message<JsonObje
 		} catch (ClassNotFoundException e) {
 			logger.error("Failed to explicitely load the postgresql driver", e);
 			startPromise.tryFail(e);
+			return;
 		}
 
 		HikariConfig conf = new HikariConfig();
@@ -63,6 +64,11 @@ public class SqlPersistor extends BusModBase implements Handler<Message<JsonObje
 		conf.setUsername(config.getString("username", "postgres"));
 		conf.setPassword(config.getString("password", ""));
 		conf.setMaximumPoolSize(config.getInteger("pool_size", 10));
+		// -1 : ne pas tenter d'obtenir une connexion à la construction du pool. Le verticle peut
+		// ainsi se déployer (et enregistrer le consumer "sql.persistor") même si PostgreSQL est
+		// momentanément injoignable au démarrage ; HikariCP (re)connecte dès que la base répond.
+		// Évite l'erreur "handler sql.persistor not found" après une perte de la base.
+		conf.setInitializationFailTimeout(config.getLong("init_fail_timeout", -1L));
 		conf.addDataSourceProperty("cachePrepStmts", "true");
 		conf.addDataSourceProperty("prepStmtCacheSize", "250");
 		conf.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -75,6 +81,7 @@ public class SqlPersistor extends BusModBase implements Handler<Message<JsonObje
 			confSlave.setUsername(config.getString("username", "postgres"));
 			confSlave.setPassword(config.getString("password", ""));
 			confSlave.setMaximumPoolSize(config.getInteger("pool_size", 10));
+			confSlave.setInitializationFailTimeout(config.getLong("init_fail_timeout", -1L));
 			confSlave.addDataSourceProperty("cachePrepStmts", "true");
 			confSlave.addDataSourceProperty("prepStmtCacheSize", "250");
 			confSlave.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

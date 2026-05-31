@@ -14,9 +14,12 @@
   <version>2.1.1-patched</version>
 
   <properties>
+    <!-- Override la version Java du grand-parent (edifice-parent fixe 1.8) :
+         le runtime entcore tourne sur Temurin 21, on compile donc en 21. -->
+    <java.version>21</java.version>
     <web-utils.version>3.3.1</web-utils.version>
     <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
-    <hikari.version>2.4.2</hikari.version>
+    <hikari.version>5.1.0</hikari.version>
     <postgres-driver.version>42.2.28</postgres-driver.version>
     <joda-time.version>2.7</joda-time.version>
   </properties>
