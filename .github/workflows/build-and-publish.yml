@@ -25,7 +25,9 @@ jobs:
           distribution: temurin
           cache: maven
 
-      # Auth needed even to READ the parent POM from GitHub Packages
+      # Two servers:
+      #  - github-openent : reads the private parent POM from open-ent/open-ent-ng (PAT, read:packages)
+      #  - github         : publishes this mod's fat JAR (automatic GITHUB_TOKEN)
       - name: Configure Maven for GitHub Packages
         run: |
           mkdir -p ~/.m2
@@ -35,6 +37,11 @@ jobs:
                     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                                         https://maven.apache.org/xsd/settings-1.0.0.xsd">
             <servers>
+              <server>
+                <id>github-openent</id>
+                <username>${env.GITHUB_ACTOR}</username>
+                <password>${env.OPENENT_PACKAGES_TOKEN}</password>
+              </server>
               <server>
                 <id>github</id>
                 <username>${env.GITHUB_ACTOR}</username>
@@ -46,15 +53,13 @@ jobs:
 
       - name: Build fat JAR
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
+          OPENENT_PACKAGES_TOKEN: ${{ secrets.OPENENT_PACKAGES_TOKEN }}
         run: mvn clean package -DskipTests -B
 
       - name: Run tests
         if: github.event_name == 'pull_request'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
+          OPENENT_PACKAGES_TOKEN: ${{ secrets.OPENENT_PACKAGES_TOKEN }}
         run: mvn test -B
 
       - name: Publish fat JAR to GitHub Packages

@@ -27,10 +27,10 @@
   </scm>
 
   <repositories>
-    <!-- Parent POM (org.openent:modules) published on GitHub Packages -->
+    <!-- Parent POM (org.openent:modules) published on GitHub Packages (open-ent-ng, private) -->
     <repository>
-      <id>github</id>
-      <name>GitHub open-ent-ng Packages</name>
+      <id>github-openent</id>
+      <name>open-ent-ng parent POMs</name>
       <url>https://maven.pkg.github.com/open-ent/open-ent-ng</url>
     </repository>
     <repository>
