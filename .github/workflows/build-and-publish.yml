@@ -25,15 +25,8 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Build fat JAR
-        run: mvn clean package -DskipTests -B
-
-      - name: Run tests
-        if: github.event_name == 'pull_request'
-        run: mvn test -B
-
+      # Auth needed even to READ the parent POM from GitHub Packages
       - name: Configure Maven for GitHub Packages
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml << 'EOF'
@@ -51,10 +44,24 @@ jobs:
           </settings>
           EOF
 
+      - name: Build fat JAR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: mvn clean package -DskipTests -B
+
+      - name: Run tests
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: mvn test -B
+
       - name: Publish fat JAR to GitHub Packages
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
         run: |
           GROUP_ID=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout)
           ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
